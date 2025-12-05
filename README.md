@@ -44,7 +44,7 @@ Step 2: Configure Database
 Edit .env file:
 
 makefile
-Copy code
+
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -54,16 +54,16 @@ DB_PASSWORD=
 Create the database:
 
 sql
-Copy code
+
 CREATE DATABASE apimailsend;
 Step 3: Create Migration for Mail Logs Table
 bash
-Copy code
+
 php artisan make:migration create_mail_logs_table --create=mail_logs
 Edit the migration database/migrations/xxxx_xx_xx_create_mail_logs_table.php:
 
 php
-Copy code
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -95,13 +95,13 @@ return new class extends Migration
 Run migration:
 
 bash
-Copy code
+
 php artisan migrate
 Step 4: Configure Mail Settings
 Edit .env:
 
 ini
-Copy code
+
 MAIL_MAILER=smtp
 MAIL_HOST=smtp.mailtrap.io
 MAIL_PORT=2525
@@ -112,14 +112,14 @@ MAIL_FROM_ADDRESS="from@example.com"
 MAIL_FROM_NAME="Laravel12-Mail"
 Step 5: Create Model & Controller
 bash
-Copy code
+
 php artisan make:model MailLog -m
 php artisan make:controller MailController --resource --model=MailLog
 php artisan make:mail TestMail
 php artisan make:controller Api/MailApiController --resource --model=MailLog
 MailLog Model (app/Models/MailLog.php)
 php
-Copy code
+
 <?php
 
 namespace App\Models;
@@ -137,7 +137,7 @@ class MailLog extends Model
 }
 MailController (app/Http/Controllers/MailController.php)
 php
-Copy code
+
 <?php
 
 namespace App\Http\Controllers;
@@ -186,7 +186,7 @@ class MailController extends Controller
 }
 TestMail Mailable (app/Mail/TestMail.php)
 php
-Copy code
+
 <?php
 
 namespace App\Mail;
@@ -216,7 +216,7 @@ Route::get('/mail/status/{id}',[MailController::class,'changeStatus']);
 routes/api.php
 
 php
-Copy code
+
 use App\Http\Controllers\Api\MailApiController;
 
 Route::post('/mail/send',[MailApiController::class,'send']);
