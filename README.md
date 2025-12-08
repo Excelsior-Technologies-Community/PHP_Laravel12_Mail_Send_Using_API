@@ -310,7 +310,7 @@ class MailController extends Controller
 ```
 
 MailController Responsibilities:
-
+---
 Show mail form
 
 Send email and save logs
