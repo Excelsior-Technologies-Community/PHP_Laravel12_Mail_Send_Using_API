@@ -1,4 +1,4 @@
-# Laravel 12 API Mail Send Project Tutorial
+# PHP_Laravel12_Mail_Send_Using_API
 
 **By:** Manasi Patel  
 **Date:** 2025  
@@ -34,8 +34,8 @@ This project demonstrates how to build a **Mail Send Project** using Laravel 12.
 ### 1. Install Laravel 12
 
 ```
-composer create-project laravel/laravel laravel12-apimailsend "^12.0"
-cd laravel12-apimailsend
+composer create-project laravel/laravel PHP_Laravel12_Mail_Send_Using_API "^12.0"
+cd PHP_Laravel12_Mail_Send_Using_API
 ```
 2. Configure Database
 Update .env:
