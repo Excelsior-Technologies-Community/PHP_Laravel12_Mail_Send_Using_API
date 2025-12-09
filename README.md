@@ -1158,7 +1158,7 @@ Commands Summary
 ```
 
 # 1. Create Laravel 12 project
-composer create-project laravel/laravel laravel12-apimailsend "^12.0"
+composer create-project laravel/laravel PHP_Laravel12_Mail_Send_Using_API "^12.0"
 
 # 2. Create migration for mail_logs table
 php artisan make:migration create_mail_logs_table --create=mail_logs
