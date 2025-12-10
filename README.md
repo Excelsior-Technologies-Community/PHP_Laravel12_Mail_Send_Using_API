@@ -1179,4 +1179,4 @@ php artisan make:mail TestMail
 # 7. Run Laravel server
 php artisan serve
 ```
-✅ Congratulations!
+ Congratulations!
