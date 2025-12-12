@@ -1138,6 +1138,31 @@ Web interface: http://localhost:8000/email
 
 API endpoints: http://localhost:8000/api/mail/...
 
+
+
+You can use in Postman then show this type:
+Send email via API (POST /api/mail/send)
+
+<img width="1905" height="974" alt="Screenshot 2025-12-04 163026" src="https://github.com/user-attachments/assets/c3f308be-43bb-4352-8863-b0d6c412fa8d" />
+
+List emails (GET /api/mail/list)
+
+<img width="1918" height="967" alt="Screenshot 2025-12-04 163129" src="https://github.com/user-attachments/assets/ef1973ab-d3c9-43db-8f0e-ef43b91b96b0" />
+
+
+
+View single email (GET /api/mail/view/{id})
+
+<img width="1916" height="982" alt="Screenshot 2025-12-04 163351" src="https://github.com/user-attachments/assets/8b143c7b-464b-4923-b7fc-5c2f5f48387e" />
+
+
+
+Soft delete (GET /api/mail/delete/{id})
+
+<img width="1919" height="959" alt="Screenshot 2025-12-04 163508" src="https://github.com/user-attachments/assets/8d3cc32e-8ec2-4bfd-8116-0195ecd21e73" />
+
+
+
 Workflow
 ---
 User fills the email form or calls API endpoint.
