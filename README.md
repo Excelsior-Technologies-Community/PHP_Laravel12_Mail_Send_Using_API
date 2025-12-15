@@ -1,7 +1,5 @@
 # PHP_Laravel12_Mail_Send_Using_API
 
-**By:** Manasi Patel  
-**Date:** 2025  
 **Laravel Version:** 12  
 
 This project demonstrates how to build a **Mail Send Project** using Laravel 12. Users can send emails via a form, view mail logs, and manage them via API endpoints. The project includes soft delete, status management, and full CRUD functionality for mail logs.
