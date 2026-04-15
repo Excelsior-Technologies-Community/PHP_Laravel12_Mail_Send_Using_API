@@ -27,3 +27,6 @@ Route::get('/mail/force-delete/{id}', [MailApiController::class, 'forceDelete'])
 
 // Change Email Status (GET)
 Route::get('/mail/status/{id}', [MailApiController::class, 'changeStatus']);
+
+// Resend Email (GET)
+Route::get('/mail/resend/{id}', [MailApiController::class, 'resend']);
