@@ -7,6 +7,7 @@ use App\Mail\TestMail;
 use App\Models\MailLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class MailApiController extends Controller
 {
@@ -15,46 +16,72 @@ class MailApiController extends Controller
      */
     public function send(Request $request)
     {
-        // Validate input
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'email'   => 'required|email',
             'subject' => 'required|string',
             'message' => 'required|string',
         ]);
 
-        // Save log
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+
+        // Save log initially
         $log = MailLog::create([
             'email'      => $validated['email'],
             'subject'    => $validated['subject'],
             'message'    => $validated['message'],
             'created_by' => 1,
-            'status'     => 1,
+            'status'     => 1, // default
         ]);
 
-        // Email details for Mailable
         $details = [
             'title' => $validated['subject'],
             'body'  => $validated['message'],
         ];
 
-        // Send Email
-        Mail::to($validated['email'])->send(new TestMail($details));
+        try {
+            Mail::to($validated['email'])->send(new TestMail($details));
+
+            $log->status = 1; // Sent
+        } catch (\Exception $e) {
+            $log->status = 2; // Failed
+        }
+
+        $log->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Email sent successfully!',
+            'message' => 'Email processed',
+            'status'  => $log->status,
             'data'    => $log
         ], 200);
     }
 
     /**
-     * List all active emails (pagination)
+     * List emails with search & filter
      */
-    public function list()
+    public function list(Request $request)
     {
-        $mails = MailLog::where('status', 1)
-                        ->orderBy('id', 'ASC')
-                        ->paginate(10);
+        $query = MailLog::query();
+
+        // Search
+        if ($request->search) {
+            $query->where('email', 'like', '%' . $request->search . '%')
+                ->orWhere('subject', 'like', '%' . $request->search . '%');
+        }
+
+        // Filter by status
+        if ($request->status !== null) {
+            $query->where('status', $request->status);
+        }
+
+        $mails = $query->orderBy('id', 'ASC')->paginate(10);
 
         return response()->json([
             'success' => true,
@@ -80,6 +107,46 @@ class MailApiController extends Controller
             'success' => true,
             'data'    => $mail
         ], 200);
+    }
+
+    /**
+     * RESEND FAILED EMAIL (NEW FEATURE)
+     */
+    public function resend($id)
+    {
+        $mail = MailLog::find($id);
+
+        if (!$mail) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mail not found'
+            ], 404);
+        }
+
+        try {
+            $details = [
+                'title' => $mail->subject,
+                'body'  => $mail->message,
+            ];
+
+            Mail::to($mail->email)->send(new TestMail($details));
+
+            $mail->status = 1; // Sent
+            $mail->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Email resent successfully'
+            ]);
+        } catch (\Exception $e) {
+            $mail->status = 2; // Failed again
+            $mail->save();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Resend failed'
+            ]);
+        }
     }
 
     /**
@@ -162,7 +229,6 @@ class MailApiController extends Controller
             ], 404);
         }
 
-        // Toggle status
         $mail->status = $mail->status == 1 ? 0 : 1;
         $mail->save();
 
