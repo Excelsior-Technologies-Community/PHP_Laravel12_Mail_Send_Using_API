@@ -15,53 +15,58 @@ class MailApiController extends Controller
      * Send an email and save log - API
      */
     public function send(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email'   => 'required|email',
-            'subject' => 'required|string',
-            'message' => 'required|string',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'email'      => 'required|email',
+        'subject'    => 'required|string',
+        'message'    => 'required|string',
+        'attachment' => 'nullable|file|mimes:pdf,jpg,png,doc,docx|max:2048',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $validated = $validator->validated();
-
-        // Save log initially
-        $log = MailLog::create([
-            'email'      => $validated['email'],
-            'subject'    => $validated['subject'],
-            'message'    => $validated['message'],
-            'created_by' => 1,
-            'status'     => 1, // default
-        ]);
-
-        $details = [
-            'title' => $validated['subject'],
-            'body'  => $validated['message'],
-        ];
-
-        try {
-            Mail::to($validated['email'])->send(new TestMail($details));
-
-            $log->status = 1; // Sent
-        } catch (\Exception $e) {
-            $log->status = 2; // Failed
-        }
-
-        $log->save();
-
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Email processed',
-            'status'  => $log->status,
-            'data'    => $log
-        ], 200);
+            'success' => false,
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    $validated = $validator->validated();
+
+    $attachmentPath = null;
+    if ($request->hasFile('attachment')) {
+        $attachmentPath = $request->file('attachment')->store('attachments', 'public');
+    }
+
+    $log = MailLog::create([
+        'email'      => $validated['email'],
+        'subject'    => $validated['subject'],
+        'message'    => $validated['message'],
+        'created_by' => 1,
+        'status'     => 1,
+    ]);
+
+    $details = [
+        'title' => $validated['subject'],
+        'body'  => $validated['message'],
+        'file'  => $attachmentPath ? storage_path('app/public/' . $attachmentPath) : null,
+    ];
+
+    try {
+        Mail::to($validated['email'])->send(new TestMail($details));
+        $log->status = 1;
+    } catch (\Exception $e) {
+        $log->status = 2;
+    }
+
+    $log->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Email processed',
+        'status'  => $log->status,
+        'data'    => $log
+    ], 200);
+}
 
     /**
      * List emails with search & filter

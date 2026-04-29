@@ -2,32 +2,30 @@
 
 namespace App\Mail;
 
+use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
 
 class TestMail extends Mailable
 {
-    // Public property to store mail details (title and body)
+    use Queueable, SerializesModels;
+
     public $details;
 
-    /**
-     * Constructor to initialize the Mailable with details
-     *
-     * @param array $details - Should contain 'title' and 'body' keys
-     */
     public function __construct($details)
     {
-        $this->details = $details; // Store the details to be accessible in the email view
+        $this->details = $details;
     }
 
-    /**
-     * Build the email message
-     *
-     * @return $this
-     */
     public function build()
     {
-        return $this->subject($this->details['title']) // Set the email subject
-                    ->view('emails.test');           // Load the Blade view for email content
+        $mail = $this->subject($this->details['title'])
+                     ->view('emails.test');
+
+        if (isset($this->details['file']) && $this->details['file']) {
+            $mail->attach($this->details['file']);
+        }
+
+        return $mail;
     }
 }
-
