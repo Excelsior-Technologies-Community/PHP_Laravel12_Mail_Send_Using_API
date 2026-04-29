@@ -4,41 +4,37 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
 
-        <!-- Card Container for Form -->
         <div class="card shadow-lg">
 
-            <!-- Card Header -->
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Send Email</h4>
             </div>
 
-            <!-- Card Body: Form Starts -->
             <div class="card-body">
-                <!-- Form POSTs to send email route -->
-                <form action="/send-email" method="POST">
-                    @csrf <!-- CSRF token for security -->
-
-                    <!-- Recipient Email Input -->
-                    <div class="mb-3">
-                        <label>Email Address</label>
-                        <input type="email" name="email" class="form-control" required>
+                <form action="/send-email" method="POST" enctype="multipart/form-data">
+                    @csrf <div class="mb-3">
+                        <label class="form-label fw-bold">Email Address</label>
+                        <input type="email" name="email" class="form-control" placeholder="example@gmail.com" required>
                     </div>
 
-                    <!-- Email Subject Input -->
                     <div class="mb-3">
-                        <label>Subject</label>
-                        <input type="text" name="subject" class="form-control" required>
+                        <label class="form-label fw-bold">Subject</label>
+                        <input type="text" name="subject" class="form-control" placeholder="Enter Subject" required>
                     </div>
 
-                    <!-- Email Message Input -->
                     <div class="mb-3">
-                        <label>Message</label>
-                        <textarea name="message" class="form-control" rows="5" required></textarea>
+                        <label class="form-label fw-bold">Message</label>
+                        <textarea name="message" class="form-control" rows="5" placeholder="Write your message here..." required></textarea>
                     </div>
 
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn btn-success w-100">
-                        Send Email
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Attachment (Optional)</label>
+                        <input type="file" name="attachment" class="form-control">
+                        <!-- <small class="text-muted">Allowed types: pdf, jpg, png, doc (Max: 2MB)</small> -->
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 shadow-sm">
+                        <i class="bi bi-send me-2"></i>Send Email
                     </button>
                 </form>
             </div>

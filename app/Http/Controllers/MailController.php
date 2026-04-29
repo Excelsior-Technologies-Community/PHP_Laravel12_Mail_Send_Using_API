@@ -29,35 +29,38 @@ class MailController extends Controller
      * Send email and save log
      */
     public function send(Request $request)
-    {
-        // Validate incoming request
-        $request->validate([
-            'email'   => 'required|email',  // Must be a valid email
-            'subject' => 'required',        // Subject required
-            'message' => 'required',        // Message required
-        ]);
+{
+    $request->validate([
+        'email'      => 'required|email',
+        'subject'    => 'required',
+        'message'    => 'required',
+        'attachment' => 'nullable|file|mimes:pdf,jpg,png,doc,docx|max:2048',
+    ]);
 
-        // Save the mail log to database
-        $log = MailLog::create([
-            'email'      => $request->email,
-            'subject'    => $request->subject,
-            'message'    => $request->message,
-            'created_by' => 1,   // Dummy user ID, replace with Auth::id() later
-            'status'     => 1,   // 1 = Active
-        ]);
-
-        // Prepare mail details for Mailable
-        $details = [
-            'title' => $request->subject,
-            'body'  => $request->message,
-        ];
-
-        // Send the email using TestMail Mailable
-        Mail::to($request->email)->send(new TestMail($details));
-
-        // Redirect to success page
-        return view('mail.success');
+    $attachmentPath = null;
+    if ($request->hasFile('attachment')) {
+        $attachmentPath = $request->file('attachment')->store('attachments', 'public');
     }
+
+    $log = MailLog::create([
+        'email'      => $request->email,
+        'subject'    => $request->subject,
+        'message'    => $request->message,
+        'created_by' => 1,
+        'status'     => 1,
+    ]);
+
+    $details = [
+        'title'     => $request->subject,
+        'body'      => $request->message,
+        'file'      => $attachmentPath ? storage_path('app/public/' . $attachmentPath) : null,
+        'file_name' => $request->hasFile('attachment') ? $request->file('attachment')->getClientOriginalName() : null,
+    ];
+
+    Mail::to($request->email)->send(new TestMail($details));
+
+    return view('mail.success');
+}
 
     /**
      * List all active mails with pagination
